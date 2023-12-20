@@ -1,11 +1,14 @@
-package junit5;
+package junit5.models;
+
+import junit5.exceptions.DineroInsuficienteException;
 
 import java.math.BigDecimal;
-import java.util.BitSet;
 
 public class Cuenta {
     private String persona;
     private BigDecimal saldo;
+
+    private Banco banco;
 
     public Cuenta(String persona, BigDecimal saldo) {
         this.persona = persona;
@@ -32,8 +35,20 @@ public class Cuenta {
         this.saldo = saldo;
     }
 
+    public Banco getBanco() {
+        return banco;
+    }
+
+    public void setBanco(Banco banco) {
+        this.banco = banco;
+    }
+
     public void debito (BigDecimal monto){
-        this.saldo=this.saldo.subtract(monto);
+        BigDecimal nuevoSaldo = this.saldo.subtract(monto);
+        if (nuevoSaldo.compareTo(BigDecimal.ZERO)<0) {
+            throw new DineroInsuficienteException("Dinero insuficiente");
+        }
+        this.saldo = nuevoSaldo;
     }
 
     public void credito (BigDecimal monto){
