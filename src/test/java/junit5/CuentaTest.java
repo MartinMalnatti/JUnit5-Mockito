@@ -18,8 +18,13 @@ class CuentaTest {
         cuenta.setPersona("Martin");
         String esperado = "Martin";
         String real = cuenta.getPersona();
-        assertNotNull(real);
-        assertEquals(esperado,real);
+        /**
+         * se utiliza expresion lambda para crear el mensaje de error
+         * esto hacer que si el test falla se cree el objeto String si no no
+         */
+        assertNotNull(real,()->"la cuenta no puede ser nula");
+        assertEquals(esperado,real, ()->"el nombre de la cuenta no es que se esperaba");
+        assertTrue(real.equals("Martin"), ()->"nombre de cuenta esperada debe ser igual a la real");
     }
 
     @Test
@@ -78,6 +83,28 @@ class CuentaTest {
         banco.setNombre("Columbus");
         banco.addCuenta(cuenta1);
         banco.addCuenta(cuenta2);
-        assertEquals(2,banco.getCuentas().size());
+        banco.transferir(cuenta1,cuenta2,new BigDecimal(500));
+        assertAll(()->{
+                assertEquals(2,banco.getCuentas().size());
+            },()->{
+                assertEquals("Ramon Valdés",banco.getCuentas().stream().filter(
+                                c -> c.getPersona().equals("Ramon Valdés"))
+                        .findFirst()
+                        .get()
+                        .getPersona());
+            },()->{
+                assertEquals("Columbus",cuenta1.getBanco().getNombre());
+            },()->{
+                assertTrue(banco.getCuentas().stream().
+                        filter(cuenta -> cuenta.getPersona().equals("Ramon Valdés")).
+                        findFirst()
+                        .isPresent());
+            },()->{
+                assertTrue(banco.getCuentas().stream().anyMatch(
+                        cuenta -> cuenta.getPersona().equals("Ramon Valdés")
+                ));
+            });
     }
+
+
 }
