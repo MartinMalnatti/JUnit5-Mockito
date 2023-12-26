@@ -4,6 +4,8 @@ package junit5;
 import junit5.models.Banco;
 import junit5.models.Cuenta;
 import junit5.exceptions.DineroInsuficienteException;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -13,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CuentaTest {
 
     @Test
+    @DisplayName("Nombre cuenta")
     void testNombreCuenta(){
         Cuenta cuenta = new Cuenta();
         cuenta.setPersona("Martin");
@@ -28,6 +31,7 @@ class CuentaTest {
     }
 
     @Test
+    @DisplayName("Testeando saldo en cuenta")
     void testSaldoCuenta(){
         Cuenta cuenta = new Cuenta("Martin", new BigDecimal("1000.4444"));
         assertNotNull(cuenta.getSaldo());
@@ -37,6 +41,7 @@ class CuentaTest {
     }
 
     @Test
+    @DisplayName("Testeando diferencias en cuenta")
     void testReferenciaCuenta(){
         Cuenta cuenta = new Cuenta("John Rambo", new BigDecimal("8989.5454"));
         Cuenta cuenta2 = new Cuenta ("John Rambo", new BigDecimal("8989.5454"));
@@ -44,6 +49,7 @@ class CuentaTest {
     }
 
     @Test
+    @DisplayName("Testeando debito en cuenta")
     void testDebitoCuenta(){
         Cuenta cuenta = new Cuenta ("John Rambo", new BigDecimal(100));
         cuenta.debito(new BigDecimal(10));
@@ -52,6 +58,7 @@ class CuentaTest {
     }
 
     @Test
+    @DisplayName("Testeando  exception")
     void testDineroInsuficienteException(){
         Cuenta cuenta = new Cuenta("Ramon",new BigDecimal("1000.1234"));
         Exception exception = assertThrows(DineroInsuficienteException.class,()->{
@@ -63,6 +70,7 @@ class CuentaTest {
     }
 
     @Test
+    @DisplayName("Testeando transferencias")
     void testTransferirDinceroCuentas() {
         Cuenta cuenta1= new Cuenta("Jhon Rambito", new BigDecimal( "2500"));
         Cuenta cuenta2= new Cuenta("Ramon Valdés", new BigDecimal( "1500"));
@@ -75,7 +83,10 @@ class CuentaTest {
     }
 
     @Test
-    void testRelacionBancocuenta() {
+    @Disabled
+    @DisplayName("Testeando relaciuon banco cuenta")
+    void testRelacionBancoCuenta() {
+        fail();
         Cuenta cuenta1= new Cuenta("Jhon Rambito", new BigDecimal( "2500"));
         Cuenta cuenta2= new Cuenta("Ramon Valdés", new BigDecimal( "1500"));
 
@@ -85,20 +96,21 @@ class CuentaTest {
         banco.addCuenta(cuenta2);
         banco.transferir(cuenta1,cuenta2,new BigDecimal(500));
         assertAll(()->{
-                assertEquals(2,banco.getCuentas().size());
+                assertEquals(2,banco.getCuentas().size(),()-> "la cantidad de cuentas no coincide");
             },()->{
                 assertEquals("Ramon Valdés",banco.getCuentas().stream().filter(
                                 c -> c.getPersona().equals("Ramon Valdés"))
                         .findFirst()
                         .get()
-                        .getPersona());
+                        .getPersona(),()->"la cuenta no pertence a Ramon Valdés");
             },()->{
-                assertEquals("Columbus",cuenta1.getBanco().getNombre());
+                assertEquals("Columbus",cuenta1.getBanco().getNombre(),()->"la cuenta no pertenece" +
+                        "al banco");
             },()->{
                 assertTrue(banco.getCuentas().stream().
                         filter(cuenta -> cuenta.getPersona().equals("Ramon Valdés")).
                         findFirst()
-                        .isPresent());
+                        .isPresent(),()->"la cuenta no pertence a Ramon Valdés");
             },()->{
                 assertTrue(banco.getCuentas().stream().anyMatch(
                         cuenta -> cuenta.getPersona().equals("Ramon Valdés")
