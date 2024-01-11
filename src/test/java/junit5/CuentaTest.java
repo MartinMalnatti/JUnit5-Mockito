@@ -5,8 +5,11 @@ import junit5.models.Banco;
 import junit5.models.Cuenta;
 import junit5.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 //@TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -144,6 +147,63 @@ class CuentaTest {
                         cuenta -> cuenta.getPersona().equals("Ramon Valdés")
                 ));
             });
+    }
+
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testSoloWindows() {
+    }
+
+    @Test
+    @EnabledOnOs({OS.LINUX,OS.MAC})
+    void testSoloLinuxMac() {
+    }
+
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void name() {
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    void soloJdk8(){
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_15)
+    void testNoJdk15(){
+    }
+
+    @Test
+    void imprimirProperties() {
+        Properties properties = System.getProperties();
+        properties.forEach((k,v)-> System.out.println(k + ":" + v));
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "java.version",matches = "21")
+    void testJavaVersion() {
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "ENV", matches = "dev")
+    void testDev() {
+    }
+
+    @Test
+    void imprimirVariablesAmbiente() {
+        Map<String, String> getenv = System.getenv();
+        getenv.forEach((k,v)-> System.out.println(k + "=" + v));
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "JAVA_HOME",matches = ".*jdk-21.*")
+    void testJavaHome() {
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "ENVIROMENT",matches = "dev")
+    void tesDev() {
     }
 
 
