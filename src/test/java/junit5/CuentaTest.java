@@ -152,87 +152,98 @@ class CuentaTest {
             });
     }
 
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void testSoloWindows() {
+    @Nested
+    class SistemaOperativoTest{
+        @Test
+        @EnabledOnOs(OS.WINDOWS)
+        void testSoloWindows() {
+        }
+
+        @Test
+        @EnabledOnOs({OS.LINUX,OS.MAC})
+        void testSoloLinuxMac() {
+        }
+
+        @Test
+        @DisabledOnOs(OS.WINDOWS)
+        void name() {
+        }
     }
 
-    @Test
-    @EnabledOnOs({OS.LINUX,OS.MAC})
-    void testSoloLinuxMac() {
+    @Nested
+    class JavaVersionTest{
+        @Test
+        @EnabledOnJre(JRE.JAVA_8)
+        void soloJdk8(){
+        }
+
+        @Test
+        @DisabledOnJre(JRE.JAVA_15)
+        void testNoJdk15(){
+        }
     }
 
-    @Test
-    @DisabledOnOs(OS.WINDOWS)
-    void name() {
+    @Nested
+    class SistemPropertiesTest{
+        @Test
+        void imprimirProperties() {
+            Properties properties = System.getProperties();
+            properties.forEach((k,v)-> System.out.println(k + ":" + v));
+        }
+
+        @Test
+        @EnabledIfSystemProperty(named = "java.version",matches = "21")
+        void testJavaVersion() {
+        }
+
+        @Test
+        @EnabledIfSystemProperty(named = "ENV", matches = "dev")
+        void testDev() {
+        }
     }
 
-    @Test
-    @EnabledOnJre(JRE.JAVA_8)
-    void soloJdk8(){
-    }
+    @Nested
+    class EnviromentVariableTest{
+        @Test
+        void imprimirVariablesAmbiente() {
+            Map<String, String> getenv = System.getenv();
+            getenv.forEach((k,v)-> System.out.println(k + "=" + v));
+        }
 
-    @Test
-    @DisabledOnJre(JRE.JAVA_15)
-    void testNoJdk15(){
-    }
+        @Test
+        @EnabledIfEnvironmentVariable(named = "JAVA_HOME",matches = ".*jdk-21.*")
+        void testJavaHome() {
+        }
 
-    @Test
-    void imprimirProperties() {
-        Properties properties = System.getProperties();
-        properties.forEach((k,v)-> System.out.println(k + ":" + v));
-    }
+        @Test
+        @EnabledIfEnvironmentVariable(named = "ENVIROMENT",matches = "dev")
+        void tesDev() {
+        }
 
-    @Test
-    @EnabledIfSystemProperty(named = "java.version",matches = "21")
-    void testJavaVersion() {
-    }
-
-    @Test
-    @EnabledIfSystemProperty(named = "ENV", matches = "dev")
-    void testDev() {
-    }
-
-    @Test
-    void imprimirVariablesAmbiente() {
-        Map<String, String> getenv = System.getenv();
-        getenv.forEach((k,v)-> System.out.println(k + "=" + v));
-    }
-
-    @Test
-    @EnabledIfEnvironmentVariable(named = "JAVA_HOME",matches = ".*jdk-21.*")
-    void testJavaHome() {
-    }
-
-    @Test
-    @EnabledIfEnvironmentVariable(named = "ENVIROMENT",matches = "dev")
-    void tesDev() {
-    }
-
-    @Test
-    @DisplayName("Testeando saldo en cuenta")
-    void testSaldoCuentaDev(){
-        boolean esDev="dev".equals(System.getProperty("ENV"));
-        assumeTrue(esDev);
-        cuenta = new Cuenta("Martin", new BigDecimal("1000.4444"));
-        assertNotNull(cuenta.getSaldo());
-        assertEquals(1000.4444,cuenta.getSaldo().doubleValue());
-        assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO)<0);
-        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO)>0);
-    }
-
-    @Test
-    @DisplayName("Testeando saldo en cuenta")
-    void testSaldoCuentaDev2(){
-        boolean esDev="dev".equals(System.getProperty("ENV"));
-        assumingThat(esDev,()->{
+        @Test
+        @DisplayName("Testeando saldo en cuenta")
+        void testSaldoCuentaDev(){
+            boolean esDev="dev".equals(System.getProperty("ENV"));
+            assumeTrue(esDev);
             cuenta = new Cuenta("Martin", new BigDecimal("1000.4444"));
             assertNotNull(cuenta.getSaldo());
             assertEquals(1000.4444,cuenta.getSaldo().doubleValue());
             assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO)<0);
             assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO)>0);
-        });
-    }
+        }
 
+        @Test
+        @DisplayName("Testeando saldo en cuenta")
+        void testSaldoCuentaDev2(){
+            boolean esDev="dev".equals(System.getProperty("ENV"));
+            assumingThat(esDev,()->{
+                cuenta = new Cuenta("Martin", new BigDecimal("1000.4444"));
+                assertNotNull(cuenta.getSaldo());
+                assertEquals(1000.4444,cuenta.getSaldo().doubleValue());
+                assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO)<0);
+                assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO)>0);
+            });
+        }
+    }
 
 }
