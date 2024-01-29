@@ -246,4 +246,17 @@ class CuentaTest {
         }
     }
 
+
+    @DisplayName("Testeando debito en cuenta repeat")
+    @RepeatedTest(value = 5,name = "{displayName} - Repeticion numero {currentRepetition} de {totalRepetitions}")
+    void testDebitoCuentaRepeat(RepetitionInfo info){
+        if (info.getCurrentRepetition() ==3){
+            System.out.println("repetition "+info.getCurrentRepetition());
+        }
+        cuenta.debito(new BigDecimal(10));
+        assertNotNull(cuenta.getSaldo());
+        assertEquals(990,cuenta.getSaldo().intValue());
+    }
+
+
 }
