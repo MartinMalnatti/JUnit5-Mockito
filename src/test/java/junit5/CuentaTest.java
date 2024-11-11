@@ -1,6 +1,8 @@
 package junit5;
 
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import junit5.models.Banco;
 import junit5.models.Cuenta;
 import junit5.exceptions.DineroInsuficienteException;
@@ -23,11 +25,17 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 class CuentaTest {
 
     Cuenta cuenta;
+    private TestInfo testInfo;
+    private TestReporter testReporter;
 
     @BeforeEach
-    void  initMetodoTest (){
-        this.cuenta = new Cuenta ("Ramon", new BigDecimal("1000.12345"));
-        System.out.println("iniciando metodo...");
+    void initMetodoTest(TestInfo testInfo, TestReporter testReporter) {
+        this.cuenta = new Cuenta("Andres", new BigDecimal("1000.12345"));
+        this.testInfo = testInfo;
+        this.testReporter = testReporter;
+        System.out.println("iniciando el metodo.");
+        testReporter.publishEntry(" ejecutando: " + testInfo.getDisplayName() + " " + testInfo.getTestMethod().orElse(null).getName()
+                + " con las etiquetas " + testInfo.getTags());
     }
 
     @AfterEach
@@ -329,6 +337,29 @@ class CuentaTest {
             assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
         }
 
+    }
+
+    @Nested
+    @Tag("timeout")
+    class EjemploTimeoutTest{
+        @Test
+        @Timeout(1)
+        void pruebaTimeout() throws InterruptedException {
+            TimeUnit.MILLISECONDS.sleep(100);
+        }
+
+        @Test
+        @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
+        void pruebaTimeout2() throws InterruptedException {
+            TimeUnit.MILLISECONDS.sleep(900);
+        }
+
+        @Test
+        void testTimeoutAssertions() {
+            assertTimeout(Duration.ofSeconds(5), ()->{
+                TimeUnit.MILLISECONDS.sleep(4000);
+            });
+        }
     }
 
 
